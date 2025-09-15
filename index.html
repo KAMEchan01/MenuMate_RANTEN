@@ -720,7 +720,40 @@
                 }
             }
             
-            // 気分に応じたメニュー選択（控えめ予算など）
+            // 控えめ予算の場合の処理（サイドメニューまたはサラダから選択）
+            if (selections.budget === 'light') {
+                // サラダまたはサイドメニューから600円以下のメニューを選択
+                const lightMenus = [...menuDatabase.salads, ...menuDatabase.sides].filter(menu => 
+                    !allergies.some(allergen => menu.allergens.includes(allergen)) &&
+                    menu.price <= 600
+                );
+                
+                if (lightMenus.length > 0) {
+                    // 気分に応じた選択
+                    let filteredMenus;
+                    if (mood === 'healthy') {
+                        // あっさり系：サラダを優先
+                        filteredMenus = lightMenus.filter(menu => menu.category === 'salad');
+                        if (filteredMenus.length === 0) filteredMenus = lightMenus;
+                    } else if (mood === 'hearty') {
+                        // がっつり系：サイドメニューを優先
+                        filteredMenus = lightMenus.filter(menu => menu.category === 'side');
+                        if (filteredMenus.length === 0) filteredMenus = lightMenus;
+                    } else {
+                        filteredMenus = lightMenus;
+                    }
+                    
+                    const selectedMenu = filteredMenus[Math.floor(Math.random() * filteredMenus.length)];
+                    
+                    return {
+                        menu: selectedMenu,
+                        comment: generateLightBudgetComment(selectedMenu, selections),
+                        allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+                    };
+                }
+            }
+            
+            // その他の予算での気分に応じたメニュー選択
             let selectedMenu;
             if (mood === 'hearty') {
                 // がっつり系：チャーシュー担々麺、セットメニューを優先
@@ -821,6 +854,35 @@
                 '麺・サラダ・サイドの絶妙なバランスが自慢のセットです',
                 '今日は特別！らんてんの美味しさを存分に味わえるセットメニュー'
             ];
+            
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
+        function generateLightBudgetComment(menu, selections) {
+            const comments = [];
+            
+            // メニュー種類別コメント
+            if (menu.category === 'salad') {
+                comments.push('ヘルシーで新鮮なサラダをお楽しみください！');
+                comments.push('野菜たっぷりで体に優しいメニューです');
+                comments.push('リーズナブルでも満足感のあるサラダです');
+            } else if (menu.category === 'side') {
+                comments.push('お手軽価格で美味しいサイドメニューです！');
+                comments.push('小腹が空いた時にぴったりの一品');
+                comments.push('控えめ予算でも満足いただけるメニューです');
+            }
+            
+            // 気分別コメント
+            if (selections.mood === 'healthy') {
+                comments.push('あっさりヘルシーで午後もすっきり');
+            } else if (selections.mood === 'hearty') {
+                comments.push('小さくても満足感のある一品です');
+            }
+            
+            // アレルギー対応コメント
+            if (selections.allergies.length > 0) {
+                comments.push('アレルギーに配慮した安心メニューです');
+            }
             
             return comments[Math.floor(Math.random() * comments.length)];
         }
