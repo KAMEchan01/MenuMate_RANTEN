@@ -265,8 +265,8 @@ const menuDatabase = {
   sides: [
     {
       id: 'meat_soboro_don',
-      name: '肉そぼろ丼',
-      price: 390,
+      name: '炙りチャーシュー丼',
+      price: 480,
       category: 'side',
       spicyLevel: 1,
       allergens: ['豚肉', '大豆'],
