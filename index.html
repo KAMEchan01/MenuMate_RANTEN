@@ -100,26 +100,32 @@
         /* 辛さ選択用のレイアウト */
         .spicy-group {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             grid-template-rows: auto auto;
             gap: 8px;
+            justify-items: center;
+            align-items: center;
         }
 
         .spicy-group .choice-btn {
             font-size: 12px;
             padding: 12px 8px;
             min-width: 60px;
+            width: 100%;
         }
 
-        /* 辛口と大辛以上を下段に配置 */
-        .spicy-group .choice-btn:nth-child(4) {
-            grid-column: 2 / 3;
-            grid-row: 2;
-        }
+        /* 1-3番目のボタンを1行目に配置 */
+        .spicy-group .choice-btn[data-spicy="0"] { grid-column: 1; grid-row: 1; }
+        .spicy-group .choice-btn[data-spicy="2"] { grid-column: 2; grid-row: 1; }
+        .spicy-group .choice-btn[data-spicy="3"] { grid-column: 3; grid-row: 1; }
 
-        .spicy-group .choice-btn:last-child {
-            grid-column: 3 / 4;
-            grid-row: 2;
+        /* 4-5番目のボタンを2行目の中央に配置 */
+        .spicy-group .choice-btn[data-spicy="4"] { grid-column: 2; grid-row: 2; }
+        .spicy-group .choice-btn[data-spicy="5"] { grid-column: 3; grid-row: 2; }
+
+        /* 改行要素を非表示 */
+        .spicy-break {
+            display: none;
         }
 
         /* 気分選択用のレイアウト */
@@ -472,11 +478,12 @@
             <div class="question">
                 <h3>🌶️ 辛さの好みをお選びください <span class="required">※必須</span></h3>
                 <div class="button-group spicy-group">
-                    <button class="choice-btn" data-spicy="0">辛さなし<br><small>1</small></button>
-                    <button class="choice-btn" data-spicy="2">ひかえめ<br><small>2</small></button>
-                    <button class="choice-btn" data-spicy="3">ふつう<br><small>3</small></button>
-                    <button class="choice-btn" data-spicy="4">辛口<br><small>4</small></button>
-                    <button class="choice-btn" data-spicy="5">大辛以上<br><small>5</small></button>
+                    <button class="choice-btn" data-spicy="0">辛さなし<br><small></small></button>
+                    <button class="choice-btn" data-spicy="2">ひかえめ🌶️ <br><small></small></button>
+                    <button class="choice-btn" data-spicy="3">ふつう🌶️ 🌶️ <br><small></small></button>
+                    <div class="spicy-break"></div>
+                    <button class="choice-btn" data-spicy="4">辛口🌶️ 🌶️ 🌶️ <br><small></small></button>
+                    <button class="choice-btn" data-spicy="5">辛口🌶️ 🌶️ 🌶️ <br><small></small></button>
                 </div>
             </div>
 
