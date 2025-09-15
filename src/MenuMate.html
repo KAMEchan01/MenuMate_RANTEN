@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenuMate - ランチメニュー提案アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .required {
+            color: #ff6b6b;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .choice-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .choice-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .optional-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #e0e0e0;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .optional-btn:hover {
+            background: #fff3cd;
+            border-color: #feca57;
+        }
+
+        .optional-btn.selected {
+            background: #feca57;
+            color: white;
+            border-color: #feca57;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result-card {
+            background: #3db425;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-header h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #000;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid #667eea;
+        }
+
+        .menu-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .menu-price {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .comment {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #feca57;
+        }
+
+        .comment p {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .crowd-question {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .crowd-question h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .crowd-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .crowd-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .crowd-btn.empty {
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .crowd-btn.crowded {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .crowd-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .final-btn {
+            width: 100%;
+            padding: 18px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .final-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            background: #545b62;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .choice-btn {
+                min-width: 100%;
+            }
+        }
+
+        /* Gacha Event Styles */
+        .gacha-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .gacha-container {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .gacha-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .gacha-machine {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background: linear-gradient(145deg, #ff4757, #ff3838);
+            border-radius: 20px;
+            border: 8px solid #ffffff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gacha-ball {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(145deg, #feca57, #ff9ff3);
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            animation: gachaSpin 2s linear infinite;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .gacha-ball.stopped {
+            animation: gachaBounce 0.5s ease-out;
+        }
+
+        @keyframes gachaSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes gachaBounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            40% {
+                transform: translateY(-10px) scale(1.1);
+            }
+            60% {
+                transform: translateY(-5px) scale(1.05);
+            }
+        }
+
+        .gacha-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .sparkle {
+            position: absolute;
+            color: #feca57;
+            font-size: 20px;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .gacha-message {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gacha-character {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: characterAppear 0.8s ease-out;
+        }
+
+        @keyframes characterAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) rotate(-10deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .excitement-text {
+            color: #ff3838;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.3), 0 0 8px rgba(255,56,56,0.3);
+            margin: 20px 0;
+            animation: excitementPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes excitementPulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 2px 2px 6px rgba(0,0,0,0.3), 0 0 8px rgba(255,56,56,0.3);
+            }
+            100% {
+                transform: scale(1.05);
+                text-shadow: 2px 2px 8px rgba(0,0,0,0.4), 0 0 12px rgba(255,56,56,0.4);
+            }
+        }
+
+        .gacha-machine.shaking {
+            animation: machineShake 0.1s linear infinite;
+        }
+
+        @keyframes machineShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        .special-glow {
+            box-shadow: 0 0 20px rgba(254, 202, 87, 0.8), 
+                        0 0 40px rgba(254, 202, 87, 0.6),
+                        0 0 60px rgba(254, 202, 87, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍽️ MenuMate</h1>
+            <p>今日のランチ、一緒に決めましょう！</p>
+        </div>
+
+        <div id="selection-screen" class="content">
+            <div class="question">
+                <h3>💰 今日のお財布事情は？ <span class="required">※必須</span></h3>
+                <div class="button-group">
+                    <button class="choice-btn" data-budget="rich">富裕<br><small>450円以上</small></button>
+                    <button class="choice-btn" data-budget="normal">普通<br><small>400円程度</small></button>
+                    <button class="choice-btn" data-budget="poor">金欠<br><small>300円以下</small></button>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>🍽️ お腹の調子は？ <span class="required">※必須</span></h3>
+                <div class="button-group">
+                    <button class="choice-btn" data-hunger="hungry">はらぺこ<br><small>がっつり系</small></button>
+                    <button class="choice-btn" data-hunger="light">少食<br><small>軽め系</small></button>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>✨ 今日の気分は？</h3>
+                <button class="optional-btn" data-mood="special">アゲアゲ<br><small>特別感を求める</small></button>
+            </div>
+
+            <button id="submit-btn" class="submit-btn" disabled>🎯 提案して！</button>
+        </div>
+
+        <div id="result-screen" class="content result">
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>💡 MenuMateからの提案</h3>
+                </div>
+                <div id="menu-items"></div>
+            </div>
+
+            <div class="comment">
+                <p id="comment-text"></p>
+            </div>
+
+            <div class="crowd-question">
+                <h4>【混雑状況はどうですか？】</h4>
+                <div class="crowd-buttons">
+                    <button class="crowd-btn empty" onclick="handleCrowdStatus('empty')">
+                        🟢 空いてる<br><small>麺🍜</small>
+                    </button>
+                    <button class="crowd-btn crowded" onclick="handleCrowdStatus('crowded')">
+                        🔴 混んでる<br><small>再提案</small>
+                    </button>
+                </div>
+            </div>
+
+            <button class="final-btn" onclick="finalDecision()">✅ これに決めた！</button>
+            <button class="back-btn" onclick="goBack()">← 最初から選び直す</button>
+        </div>
+
+        <div id="final-screen" class="content result">
+            <div class="result-header" style="text-align: center; margin-bottom: 30px;">
+                <h3>🎉 決定しました！</h3>
+                <p style="margin-top: 10px; color: #666;">最高のランチタイムをお過ごしください</p>
+                <div style="text-align: center; margin-top: 20px;">
+                    <img src="GSYUASA.png" alt="GSYUASA Logo" style="max-width: 200px; height: auto;">
+                </div>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>📋 選択されたメニュー</h3>
+                </div>
+                <div id="final-menu-items"></div>
+            </div>
+
+            <div class="comment">
+                <p id="final-comment-text"></p>
+            </div>
+            
+            <button class="back-btn" onclick="restart()">← 新しく選ぶ</button>
+        </div>
+    </div>
+
+    <!-- Gacha Event Overlay -->
+    <div id="gacha-overlay" class="gacha-overlay">
+        <div class="gacha-container">
+            <div class="gacha-title">✨ アゲアゲ<br>&nbsp;&nbsp;&nbsp;ガチャタイム ✨</div>
+            
+            <div class="gacha-machine">
+                <div id="gacha-ball" class="gacha-ball">🎰</div>
+                <div class="gacha-sparkles">
+                    <div class="sparkle" style="top: 10%; left: 20%;">✨</div>
+                    <div class="sparkle" style="top: 20%; right: 15%;">⭐</div>
+                    <div class="sparkle" style="bottom: 20%; left: 15%;">💫</div>
+                    <div class="sparkle" style="bottom: 10%; right: 20%;">✨</div>
+                </div>
+            </div>
+            
+            <div id="gacha-message" class="gacha-message">ガチャガチャ回転中...</div>
+            
+            <div id="gacha-character" class="gacha-character" style="display: none;"></div>
+            
+            <div id="excitement-text" class="excitement-text" style="display: none;">
+                スペシャルメニュー<br>出現！！
+            </div>
+        </div>
+    </div>
+
+    <script src="menuDatabase.js"></script>
+    <script>
+
+        // 選択状態
+        let selections = {
+            budget: null,
+            hunger: null,
+            mood: null
+        };
+
+        let currentSuggestion = null;
+        let gachaEventTriggered = false;
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // 選択ボタンのイベント
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.dataset.budget || this.dataset.hunger;
+                    const category = this.dataset.budget ? 'budget' : 'hunger';
+                    
+                    // 同じカテゴリの他のボタンの選択を解除
+                    document.querySelectorAll(`[data-${category}]`).forEach(b => b.classList.remove('selected'));
+                    
+                    this.classList.add('selected');
+                    selections[category] = type;
+                    
+                    checkSubmitButton();
+                });
+            });
+
+            // 気分ボタン（任意）
+            document.querySelector('.optional-btn').addEventListener('click', function() {
+                this.classList.toggle('selected');
+                selections.mood = this.classList.contains('selected') ? this.dataset.mood : null;
+                
+                // アゲアゲボタンが選択された場合、ガチャイベントを発動（初回のみ）
+                if (selections.mood === 'special' && !gachaEventTriggered) {
+                    gachaEventTriggered = true;
+                    triggerGachaEvent();
+                }
+            });
+
+            // 提案ボタン
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                generateSuggestion();
+            });
+        }
+
+        function checkSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            if (selections.budget && selections.hunger) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function generateSuggestion(avoidCrowded = false, prioritizeRamen = false) {
+            const suggestion = createSuggestion(selections, avoidCrowded, prioritizeRamen);
+            currentSuggestion = suggestion;
+            displaySuggestion(suggestion);
+            showResultScreen();
+        }
+
+        function createSuggestion(selections, avoidCrowded = false, prioritizeRamen = false) {
+            const budget = getBudgetRange(selections.budget);
+            const isHungry = selections.hunger === 'hungry';
+            const isSpecial = selections.mood === 'special';
+            
+            let availableItems = [...menuDatabase.main];
+            
+            // 混雑回避
+            if (avoidCrowded) {
+                availableItems = availableItems.filter(item => !item.crowded);
+            }
+            
+            // 空いている場合はラーメンを優先
+            if (prioritizeRamen) {
+                const ramenItems = availableItems.filter(item => item.category === 'noodle');
+                const otherItems = availableItems.filter(item => item.category !== 'noodle');
+                availableItems = [...ramenItems, ...otherItems];
+            }
+            
+            let suggestions = [];
+            
+            // 予算に応じた提案生成
+            for (let attempt = 0; attempt < 50; attempt++) {
+                const suggestion = generateRandomCombination(availableItems, budget, isHungry, isSpecial, prioritizeRamen);
+                if (suggestion && suggestion.total <= budget.max) {
+                    suggestions.push(suggestion);
+                    if (suggestions.length >= 2) break;
+                }
+            }
+            
+            // 最適な提案を選択
+            if (suggestions.length > 0) {
+                return suggestions[Math.floor(Math.random() * Math.min(suggestions.length, 2))];
+            }
+            
+            // フォールバック
+            return createFallbackSuggestion(budget);
+        }
+
+        function generateRandomCombination(availableItems, budget, isHungry, isSpecial, prioritizeRamen = false) {
+            let items = [];
+            let total = 0;
+            
+            // 特別感を求める場合はスペシャルメニュー優先
+            if (isSpecial) {
+                availableItems = [...availableItems.filter(item => item.name.includes('スペシャル')), ...availableItems];
+            }
+            
+            // ラーメン優先の場合は麺類を最優先
+            if (prioritizeRamen) {
+                availableItems = [...availableItems.filter(item => item.category === 'noodle'), ...availableItems];
+            }
+            
+            // 予算と食欲に基づく品数決定
+            const budgetType = selections.budget;
+            const hungerType = selections.hunger;
+            let targetItemCount = 2; // デフォルト
+            
+            if (budgetType === 'poor' && hungerType === 'light') {
+                // 金欠＋少食：290円以内で2品目
+                targetItemCount = 2;
+                budget.max = Math.min(budget.max, 290);
+            } else if (budgetType === 'normal' && hungerType === 'light') {
+                // 普通＋少食：380円程度で味噌汁を含む3品目
+                targetItemCount = 3;
+                budget.max = Math.min(budget.max, 380);
+            } else if (budgetType === 'normal' && hungerType === 'hungry') {
+                // 普通＋はらぺこ：4品目
+                targetItemCount = 4;
+            } else if (budgetType === 'rich' && hungerType === 'hungry') {
+                // 富裕＋はらぺこ：5品目
+                targetItemCount = 5;
+            }
+            
+            // アゲアゲの場合はデザートをプラス
+            if (isSpecial) {
+                targetItemCount += 1;
+            }
+            
+            // メインアイテムを選択
+            const mainItem = availableItems[Math.floor(Math.random() * Math.min(3, availableItems.length))];
+            items.push(mainItem);
+            total += mainItem.price;
+            
+            // 組み合わせ制限チェック
+            const canAddRice = !['curry', 'bowl', 'bento'].includes(mainItem.category);
+            
+            // 品数に応じてアイテムを追加
+            let attempts = 0;
+            while (items.length < targetItemCount && attempts < 20) {
+                attempts++;
+                
+                // 品数に応じた優先順位
+                if (items.length === 1 && canAddRice) {
+                    // 2品目：ご飯を優先
+                    const riceOptions = isHungry ? 
+                        menuDatabase.rice.filter(r => r.name.includes('大') || r.name.includes('中')) :
+                        menuDatabase.rice.filter(r => !r.name.includes('大'));
+                    
+                    if (riceOptions.length > 0) {
+                        const rice = riceOptions[Math.floor(Math.random() * riceOptions.length)];
+                        if (total + rice.price <= budget.max) {
+                            items.push(rice);
+                            total += rice.price;
+                            continue;
+                        }
+                    }
+                }
+                
+                if (items.length === 2 && (budgetType === 'normal' && hungerType === 'light')) {
+                    // 普通＋少食の3品目：味噌汁を必須で追加
+                    const misoSoup = menuDatabase.side.find(side => side.name === '味噌汁');
+                    if (misoSoup && total + misoSoup.price <= budget.max) {
+                        items.push(misoSoup);
+                        total += misoSoup.price;
+                        continue;
+                    }
+                }
+                
+                // アゲアゲの場合、最後にデザートを追加
+                if (isSpecial && items.length === targetItemCount - 1) {
+                    const dessert = menuDatabase.side.find(side => side.category === 'dessert');
+                    if (dessert && total + dessert.price <= budget.max) {
+                        items.push(dessert);
+                        total += dessert.price;
+                        continue;
+                    }
+                }
+                
+                // その他のサイドメニューを追加
+                const affordableSides = menuDatabase.side.filter(side => 
+                    total + side.price <= budget.max && 
+                    !items.some(item => item.name === side.name)
+                );
+                
+                if (affordableSides.length > 0) {
+                    const side = affordableSides[Math.floor(Math.random() * affordableSides.length)];
+                    items.push(side);
+                    total += side.price;
+                } else {
+                    break; // 予算内で追加できるアイテムがない
+                }
+            }
+            
+            return {
+                items: items,
+                total: total,
+                comment: generateComment(items, selections, total, prioritizeRamen)
+            };
+        }
+
+        function getBudgetRange(budget) {
+            switch(budget) {
+                case 'rich': return {max: 500, min: 450};
+                case 'normal': return {max: 450, min: 300};
+                case 'poor': return {max: 300, min: 150};
+                default: return {max: 400, min: 200};
+            }
+        }
+
+        function generateComment(items, selections, total, prioritizeRamen = false) {
+            const comments = [];
+            
+            // ラーメン優先時の特別コメント
+            if (prioritizeRamen) {
+                const hasRamen = items.some(item => item.category === 'noodle');
+                if (hasRamen) {
+                    comments.push('今がチャンス！熱々麺類を楽しめます', 'ラッキー！待ち時間なしで麺類が食べられそう', '空いてる今なら麺類がおすすめ');
+                }
+            }
+            
+            if (selections.budget === 'poor') {
+                comments.push('節約ランチでも美味しく！', '金欠の味方メニューです', 'コスパ最高の組み合わせ');
+            } else if (selections.budget === 'rich') {
+                comments.push('今日はちょっと贅沢しましょう！', '充実ランチで午後も頑張って', 'リッチなランチタイム');
+            } else {
+                comments.push('バランスの良い組み合わせです', '定番で間違いなし', '普通予算でしっかりと');
+            }
+            
+            if (selections.hunger === 'hungry') {
+                comments.push('がっつり食べて元気チャージ！', 'ボリューム満点で満足度◎');
+            } else {
+                comments.push('軽やかランチで午後もすっきり', 'ヘルシーで体に優しい');
+            }
+            
+            if (selections.mood === 'special') {
+                comments.push('今日は特別な日ですね！', 'スペシャル気分にぴったり');
+            }
+            
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
+        function createFallbackSuggestion(budget) {
+            if (budget.max <= 300) {
+                return {
+                    items: [{name: 'カレーライス', price: 200, icon: '🍛'}],
+                    total: 200,
+                    comment: '定番カレーで間違いなし！'
+                };
+            } else {
+                return {
+                    items: [
+                        {name: 'お魚プレート', price: 200, icon: '🐟'},
+                        {name: 'ご飯（中）', price: 90, icon: '🍚'},
+                        {name: '味噌汁', price: 60, icon: '🍲'}
+                    ],
+                    total: 350,
+                    comment: 'バランス良い定食スタイル！'
+                };
+            }
+        }
+
+        function displaySuggestion(suggestion) {
+            const menuItems = document.getElementById('menu-items');
+            const commentText = document.getElementById('comment-text');
+            
+            menuItems.innerHTML = '';
+            
+            suggestion.items.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.innerHTML = `
+                    <div class="menu-name">${item.icon} ${item.name}</div>
+                    <div class="menu-price">${item.price}円</div>
+                `;
+                menuItems.appendChild(menuItem);
+            });
+            
+            // 合計を追加
+            const totalItem = document.createElement('div');
+            totalItem.className = 'menu-item';
+            totalItem.innerHTML = `
+                <div class="menu-name">💰 合計金額</div>
+                <div class="menu-price">${suggestion.total}円</div>
+            `;
+            menuItems.appendChild(totalItem);
+            
+            commentText.textContent = `💬 ${suggestion.comment}`;
+        }
+
+        function displayFinalDecision() {
+            if (!currentSuggestion) return;
+            
+            const finalMenuItems = document.getElementById('final-menu-items');
+            const finalCommentText = document.getElementById('final-comment-text');
+            
+            finalMenuItems.innerHTML = '';
+            
+            currentSuggestion.items.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.innerHTML = `
+                    <div class="menu-name">${item.icon} ${item.name}</div>
+                    <div class="menu-price">${item.price}円</div>
+                `;
+                finalMenuItems.appendChild(menuItem);
+            });
+            
+            // 合計を追加
+            const totalItem = document.createElement('div');
+            totalItem.className = 'menu-item';
+            totalItem.innerHTML = `
+                <div class="menu-name">💰 合計金額</div>
+                <div class="menu-price">${currentSuggestion.total}円</div>
+            `;
+            finalMenuItems.appendChild(totalItem);
+            
+            finalCommentText.textContent = `💬 ${currentSuggestion.comment}`;
+        }
+
+        function handleCrowdStatus(status) {
+            if (status === 'crowded') {
+                generateSuggestion(true); // 混雑メニューを避けて再提案
+            } else {
+                generateSuggestion(false, true); // 空いている場合はラーメンを優先して再提案
+            }
+        }
+
+        function finalDecision() {
+            displayFinalDecision();
+            showFinalScreen();
+        }
+
+        function showResultScreen() {
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-screen').style.display = 'none';
+        }
+
+        function showFinalScreen() {
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'block';
+        }
+
+        function goBack() {
+            document.getElementById('selection-screen').style.display = 'block';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'none';
+        }
+
+        function restart() {
+            // 選択状態をリセット
+            selections = {budget: null, hunger: null, mood: null};
+            
+            // ガチャイベントフラグをリセット
+            gachaEventTriggered = false;
+            
+            // ボタンの選択状態をリセット
+            document.querySelectorAll('.choice-btn, .optional-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // 提案ボタンを無効化
+            document.getElementById('submit-btn').disabled = true;
+            
+            // 最初の画面を表示
+            goBack();
+        }
+
+        // 音声ファイルを使用した音響効果
+        function createAudioController() {
+            let drumrollAudio = null;
+            let finishAudio = null;
+            
+            try {
+                drumrollAudio = new Audio('ドラムロール.mp3');
+                finishAudio = new Audio('決定ボタンを押す37 (1).mp3');
+                
+                // 音声の設定
+                drumrollAudio.loop = true;
+                drumrollAudio.volume = 0.7;
+                finishAudio.volume = 0.8;
+                
+                // プリロード
+                drumrollAudio.preload = 'auto';
+                finishAudio.preload = 'auto';
+                
+            } catch (error) {
+                console.log('Audio files not found:', error);
+            }
+            
+            return {
+                start: () => {
+                    if (drumrollAudio) {
+                        drumrollAudio.currentTime = 0;
+                        drumrollAudio.play().catch(e => console.log('Drumroll play failed:', e));
+                    }
+                },
+                stop: () => {
+                    if (drumrollAudio) {
+                        drumrollAudio.pause();
+                        drumrollAudio.currentTime = 0;
+                    }
+                },
+                playFinishSound: () => {
+                    if (finishAudio) {
+                        finishAudio.currentTime = 0;
+                        finishAudio.play().catch(e => console.log('Finish sound play failed:', e));
+                    }
+                }
+            };
+        }
+
+        // ガチャイベント関連の関数
+        function triggerGachaEvent() {
+            const overlay = document.getElementById('gacha-overlay');
+            const ball = document.getElementById('gacha-ball');
+            const machine = document.querySelector('.gacha-machine');
+            const message = document.getElementById('gacha-message');
+            const character = document.getElementById('gacha-character');
+            const excitementText = document.getElementById('excitement-text');
+            
+            // 音声コントローラーを作成
+            const audioController = createAudioController();
+            
+            // オーバーレイを表示
+            overlay.style.display = 'flex';
+            
+            // 初期状態にリセット
+            ball.classList.remove('stopped');
+            machine.classList.remove('shaking', 'special-glow');
+            character.style.display = 'none';
+            excitementText.style.display = 'none';
+            message.textContent = 'ガチャガチャ回転中...';
+            ball.textContent = '🎰';
+            
+            // バイブレーション（対応ブラウザのみ）
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+            
+            // ドラムロール開始
+            audioController.start();
+            
+            // マシンにシェイクエフェクトを追加
+            machine.classList.add('shaking');
+            
+            // スピン時間を4秒に変更
+            const spinDuration = 4000; // 4秒
+            
+            // データベースから食堂メニューの絵文字を取得
+            const menuItems = [];
+            // メインメニューから絵文字を取得
+            menuDatabase.main.forEach(item => menuItems.push(item.icon));
+            // サイドメニューから絵文字を取得
+            menuDatabase.side.forEach(item => menuItems.push(item.icon));
+            // ご飯メニューから絵文字を取得
+            menuDatabase.rice.forEach(item => menuItems.push(item.icon));
+            
+            // 重複を除去
+            const foodEmojis = [...new Set(menuItems)];
+            
+            // ランダムに食堂メニューを変更するアニメーション
+            const charChangeInterval = setInterval(() => {
+                ball.textContent = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+            }, 120); // 少し速めに切り替え
+            
+            // メッセージを変更するアニメーション
+            const messages = [
+                '今日のスペシャルメニューは？',
+                'ガチャガチャ回転中...',
+                '何が出るかな？',
+                'ワクワクドキドキ！',
+                'もうすぐ決まるよ...',
+                'アゲアゲメニュー登場予感！'
+            ];
+            let messageIndex = 0;
+            const messageInterval = setInterval(() => {
+                message.textContent = messages[messageIndex % messages.length];
+                messageIndex++;
+                
+                // ランダムな短いバイブレーション
+                if (navigator.vibrate && Math.random() < 0.2) {
+                    navigator.vibrate(30);
+                }
+            }, 800);
+            
+            // 4秒後に停止してキャラクター表示
+            setTimeout(() => {
+                clearInterval(charChangeInterval);
+                clearInterval(messageInterval);
+                
+                // ドラムロール停止とフィニッシュ音
+                audioController.stop();
+                audioController.playFinishSound();
+                
+                // シェイクを停止
+                machine.classList.remove('shaking');
+                
+                // ボールを停止状態に
+                ball.classList.add('stopped');
+                
+                // 最終的な食堂メニューを選択（スペシャル系を優先）
+                const specialItems = menuDatabase.main.filter(item => item.name.includes('スペシャル'));
+                const finalEmoji = specialItems.length > 0 && Math.random() < 0.4 
+                    ? specialItems[Math.floor(Math.random() * specialItems.length)].icon
+                    : foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+                    
+                ball.textContent = finalEmoji;
+                
+                // スペシャルエフェクト
+                machine.classList.add('special-glow');
+                
+                // 成功バイブレーション
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200, 100, 300]);
+                }
+                
+                // メッセージ更新
+                message.textContent = 'アゲアゲ成功！';
+                
+                // 大きなキャラクターを表示
+                setTimeout(() => {
+                    character.textContent = finalEmoji;
+                    character.style.display = 'block';
+                    excitementText.style.display = 'block';
+                }, 500);
+                
+                // 3秒後にオーバーレイを閉じて、メニュー提案を表示
+                setTimeout(() => {
+                    closeGachaEvent();
+                    // ガチャイベント後にメニュー提案を自動実行
+                    if (selections.budget && selections.hunger) {
+                        generateSuggestion();
+                    }
+                }, 3000);
+                
+            }, spinDuration);
+        }
+        
+        function closeGachaEvent() {
+            const overlay = document.getElementById('gacha-overlay');
+            overlay.style.display = 'none';
+        }
+
+        // オーバーレイをクリックしても閉じる
+        document.getElementById('gacha-overlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeGachaEvent();
+            }
+        });
+    </script>
+</body>
+</html>

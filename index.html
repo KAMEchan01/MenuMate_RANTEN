@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MenuMate - 担々麺とサラダの店らんてん専用アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: 
+                linear-gradient(135deg, rgba(214,48,49,0.8) 0%, rgba(0,0,0,0.6) 50%, rgba(255,255,255,0.8) 100%),
+                url('トップページ担々麺.png') center/cover no-repeat;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #d63031, #000000);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .required {
+            color: #d63031;
+            font-size: 12px;
+            font-weight: normal;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .choice-btn {
+            flex: 1;
+            padding: 15px 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .choice-btn.selected {
+            background: #d63031;
+            color: white;
+            border-color: #d63031;
+        }
+
+
+        .allergy-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .allergy-btn {
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .allergy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .allergy-btn.selected {
+            background: #fdcb6e;
+            color: white;
+            border-color: #fdcb6e;
+        }
+
+        .no-allergy-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #00b894;
+            background: white;
+            color: #00b894;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .no-allergy-btn:hover {
+            background: #00b894;
+            color: white;
+        }
+
+        .no-allergy-btn.selected {
+            background: #00b894;
+            color: white;
+        }
+
+        .optional-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #e0e0e0;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .optional-btn:hover {
+            background: #fff3cd;
+            border-color: #feca57;
+        }
+
+        .optional-btn.selected {
+            background: #feca57;
+            color: white;
+            border-color: #feca57;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #d63031, #000000);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f82258, #f83b3b);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-header h3 {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255,255,255,0.5);
+        }
+
+        .menu-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .menu-price {
+            font-weight: bold;
+            color: white;
+        }
+
+        .signature-badge {
+            background: #feca57;
+            color: #333;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            margin-left: 8px;
+        }
+
+        .comment {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #feca57;
+        }
+
+        .comment p {
+            color: #333;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .allergy-warning {
+            background: #ffebe6;
+            border: 2px solid #ff7675;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .allergy-warning h4 {
+            color: #d63031;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .allergy-warning p {
+            color: #333;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .spicy-adjust {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .spicy-adjust h4 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .spicy-adjust-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .spicy-adjust-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .spicy-adjust-btn:hover {
+            background: #ff7675;
+            color: white;
+            border-color: #ff7675;
+        }
+
+        .final-btn {
+            width: 100%;
+            padding: 18px;
+            background: #00b894;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .final-btn:hover {
+            background: #00a085;
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            width: 100%;
+            padding: 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .back-btn:hover {
+            background: #545b62;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .choice-btn {
+                min-width: 100%;
+            }
+
+            .allergy-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍜 MenuMate</h1>
+            <div class="subtitle">担々麺とサラダの店らんてん</div>
+            <img src="src/らんてんマーク.png" alt="らんてんロゴ" style="width: 60px; height: 60px; margin: 10px 0; object-fit: contain;">
+            <p>辛さとアレルギーに配慮した提案をします</p>
+        </div>
+
+        <div id="selection-screen" class="content">
+            <div class="question">
+                <h3>💰 ご予算はいかがですか？ <span class="required">※必須</span></h3>
+                <div class="button-group">
+                    <button class="choice-btn" data-budget="luxury">贅沢<br><small>1500円〜</small></button>
+                    <button class="choice-btn" data-budget="normal">普通<br><small>1000円程度</small></button>
+                    <button class="choice-btn" data-budget="light">控えめ<br><small>600円以下</small></button>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>🌶️ 辛さの好みは？ <span class="required">※必須</span></h3>
+                <div class="button-group">
+                    <button class="choice-btn" data-spicy="1">マイルド<br><small>優しい辛さ</small></button>
+                    <button class="choice-btn" data-spicy="3">中辛<br><small>程よい辛さ</small></button>
+                    <button class="choice-btn" data-spicy="5">辛口<br><small>しっかり辛い</small></button>
+                </div>
+            </div>
+
+            <div class="question">
+                <h3>⚠️ アレルギーがあるものを選んでください <span class="required">※必須</span></h3>
+                <div class="allergy-grid">
+                    <button class="allergy-btn" data-allergy="小麦">小麦</button>
+                    <button class="allergy-btn" data-allergy="大豆">大豆</button>
+                    <button class="allergy-btn" data-allergy="卵">卵</button>
+                    <button class="allergy-btn" data-allergy="乳製品">乳製品</button>
+                    <button class="allergy-btn" data-allergy="ごま">ごま</button>
+                    <button class="allergy-btn" data-allergy="えび">えび</button>
+                    <button class="allergy-btn" data-allergy="鶏肉">鶏肉</button>
+                    <button class="allergy-btn" data-allergy="豚肉">豚肉</button>
+                </div>
+                <button class="no-allergy-btn" id="no-allergy-btn">アレルギーなし</button>
+            </div>
+
+            <div class="question">
+                <h3>✨ 今日の気分は？</h3>
+                <div class="button-group">
+                    <button class="optional-btn" data-mood="hearty">がっつり系<br><small>満腹重視</small></button>
+                    <button class="optional-btn" data-mood="healthy">あっさり系<br><small>ヘルシー重視</small></button>
+                </div>
+            </div>
+
+            <button id="submit-btn" class="submit-btn" disabled>🎯 おすすめを教えて！</button>
+        </div>
+
+        <div id="result-screen" class="content result">
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>💡 らんてんMenuMateからの提案</h3>
+                </div>
+                <div id="menu-items"></div>
+            </div>
+
+            <div class="comment">
+                <p id="comment-text"></p>
+            </div>
+
+            <div id="allergy-warning" class="allergy-warning" style="display: none;">
+                <h4>⚠️ アレルギー情報</h4>
+                <p id="allergy-warning-text"></p>
+            </div>
+
+            <div class="spicy-adjust">
+                <h4>🌶️ 辛さ調整</h4>
+                <div class="spicy-adjust-buttons">
+                    <button class="spicy-adjust-btn" onclick="adjustSpiciness(-1)">より弱く</button>
+                    <button class="spicy-adjust-btn" onclick="adjustSpiciness(0)">このまま</button>
+                    <button class="spicy-adjust-btn" onclick="adjustSpiciness(1)">より辛く</button>
+                </div>
+            </div>
+
+            <button class="final-btn" onclick="finalDecision()">✅ これで注文します！</button>
+            <button class="back-btn" onclick="goBack()">← 最初から選び直す</button>
+        </div>
+
+        <div id="final-screen" class="content result">
+            <div class="result-header" style="text-align: center; margin-bottom: 30px;">
+                <h3>🎉 素敵なお食事を<br>お楽しみください 🎉</h3>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-header">
+                    <h3>📋 ご注文内容</h3>
+                </div>
+                <div id="final-menu-items"></div>
+            </div>
+
+            <div class="comment">
+                <p id="final-comment-text"></p>
+            </div>
+            
+            <button class="back-btn" onclick="restart()">← 新しく選ぶ</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import menuDatabase from './src/menuDatabase.js';
+
+        // 選択状態
+        let selections = {
+            budget: null,
+            spiciness: null,
+            allergies: [],
+            mood: null
+        };
+
+        let currentSuggestion = null;
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // 予算選択ボタン
+            document.querySelectorAll('[data-budget]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-budget]').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selections.budget = this.dataset.budget;
+                    checkSubmitButton();
+                });
+            });
+
+            // 辛さ選択ボタン
+            document.querySelectorAll('[data-spicy]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-spicy]').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selections.spiciness = parseInt(this.dataset.spicy);
+                    checkSubmitButton();
+                });
+            });
+
+            // アレルギー選択ボタン
+            document.querySelectorAll('[data-allergy]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const allergy = this.dataset.allergy;
+                    
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        selections.allergies = selections.allergies.filter(a => a !== allergy);
+                    } else {
+                        this.classList.add('selected');
+                        selections.allergies.push(allergy);
+                        // アレルギーありを選択した場合、アレルギーなしボタンを無効化
+                        document.getElementById('no-allergy-btn').classList.remove('selected');
+                    }
+                    checkSubmitButton();
+                });
+            });
+
+            // アレルギーなしボタン
+            document.getElementById('no-allergy-btn').addEventListener('click', function() {
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                } else {
+                    this.classList.add('selected');
+                    // 他のアレルギーボタンをすべて無効化
+                    document.querySelectorAll('[data-allergy]').forEach(btn => btn.classList.remove('selected'));
+                    selections.allergies = [];
+                }
+                checkSubmitButton();
+            });
+
+            // 気分ボタン（任意）
+            document.querySelectorAll('[data-mood]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-mood]').forEach(b => b.classList.remove('selected'));
+                    
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        selections.mood = null;
+                    } else {
+                        this.classList.add('selected');
+                        selections.mood = this.dataset.mood;
+                    }
+                });
+            });
+
+            // 提案ボタン
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                generateSuggestion();
+            });
+        }
+
+        function checkSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            const allergySelected = selections.allergies.length > 0 || document.getElementById('no-allergy-btn').classList.contains('selected');
+            
+            if (selections.budget && selections.spiciness !== null && allergySelected) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function generateSuggestion() {
+            const suggestion = createSuggestion(selections);
+            currentSuggestion = suggestion;
+            displaySuggestion(suggestion);
+            showResultScreen();
+        }
+
+        function createSuggestion(selections) {
+            const budget = getBudgetRange(selections.budget);
+            const spiciness = selections.spiciness;
+            const allergies = selections.allergies;
+            const mood = selections.mood;
+            
+            // アレルギー対応メニューを取得
+            let availableMenus = menuDatabase.getMenusWithoutAllergens(allergies);
+            
+            // 辛さレベルに適したメニューを優先
+            let suitableMenus = availableMenus.filter(menu => {
+                if (menu.spicyLevel === 0) return true; // 辛くないメニューは常に適用
+                return Math.abs(menu.spicyLevel - spiciness) <= 1; // ±1レベルまで許容
+            });
+            
+            // 適切なメニューがない場合は全メニューから選択
+            if (suitableMenus.length === 0) {
+                suitableMenus = availableMenus;
+            }
+            
+            // 予算内のメニューを選択
+            const affordableMenus = suitableMenus.filter(menu => menu.price <= budget.max);
+            
+            if (affordableMenus.length === 0) {
+                return createFallbackSuggestion(budget, allergies);
+            }
+            
+            // 贅沢予算の場合の特別処理（3品セット）
+            if (selections.budget === 'luxury') {
+                // 担々麺または湯麺から1品選択
+                const noodleMenus = [...menuDatabase.tantanmen, ...menuDatabase.yunmen].filter(menu => 
+                    !allergies.some(allergen => menu.allergens.includes(allergen))
+                );
+                
+                // サラダから1品選択
+                const saladMenus = menuDatabase.salads.filter(salad => 
+                    !allergies.some(allergen => salad.allergens.includes(allergen))
+                );
+                
+                // サイドメニューから1品選択
+                const sideMenus = menuDatabase.sides.filter(side => 
+                    !allergies.some(allergen => side.allergens.includes(allergen))
+                );
+                
+                if (noodleMenus.length > 0 && saladMenus.length > 0 && sideMenus.length > 0) {
+                    // 辛さレベルに適した麺類を優先選択
+                    let suitableNoodles = noodleMenus.filter(menu => {
+                        if (menu.spicyLevel === 0) return true;
+                        return Math.abs(menu.spicyLevel - spiciness) <= 1;
+                    });
+                    if (suitableNoodles.length === 0) suitableNoodles = noodleMenus;
+                    
+                    const selectedNoodle = suitableNoodles[Math.floor(Math.random() * suitableNoodles.length)];
+                    const selectedSalad = saladMenus[Math.floor(Math.random() * saladMenus.length)];
+                    const selectedSide = sideMenus[Math.floor(Math.random() * sideMenus.length)];
+                    
+                    const totalPrice = selectedNoodle.price + selectedSalad.price + selectedSide.price;
+                    
+                    // 辛さ調整
+                    const adjustedNoodle = {
+                        ...selectedNoodle,
+                        adjustedSpiciness: spiciness,
+                        originalSpiciness: selectedNoodle.spicyLevel
+                    };
+                    
+                    return {
+                        menu: adjustedNoodle,
+                        extraMenus: [selectedSalad, selectedSide],
+                        totalPrice: totalPrice,
+                        comment: generateLuxuryComment(adjustedNoodle, selectedSalad, selectedSide, selections),
+                        allergyWarning: generateAllergyWarning(adjustedNoodle, allergies)
+                    };
+                }
+            }
+            
+            // 普通予算の場合の処理（担々麺または湯麺から1品）
+            if (selections.budget === 'normal') {
+                // 担々麺または湯麺から選択
+                const noodleMenus = [...menuDatabase.tantanmen, ...menuDatabase.yunmen].filter(menu => 
+                    !allergies.some(allergen => menu.allergens.includes(allergen)) &&
+                    menu.price <= budget.max
+                );
+                
+                if (noodleMenus.length > 0) {
+                    // 辛さレベルに適したメニューを優先選択
+                    let suitableNoodles = noodleMenus.filter(menu => {
+                        if (menu.spicyLevel === 0) return true; // 辛くないメニューは常に適用
+                        return Math.abs(menu.spicyLevel - spiciness) <= 1; // ±1レベルまで許容
+                    });
+                    if (suitableNoodles.length === 0) suitableNoodles = noodleMenus;
+                    
+                    const selectedNoodle = suitableNoodles[Math.floor(Math.random() * suitableNoodles.length)];
+                    
+                    // 辛さ調整
+                    const adjustedMenu = {
+                        ...selectedNoodle,
+                        adjustedSpiciness: spiciness,
+                        originalSpiciness: selectedNoodle.spicyLevel
+                    };
+                    
+                    return {
+                        menu: adjustedMenu,
+                        comment: generateComment(adjustedMenu, selections),
+                        allergyWarning: generateAllergyWarning(adjustedMenu, allergies)
+                    };
+                }
+            }
+            
+            // 気分に応じたメニュー選択（控えめ予算など）
+            let selectedMenu;
+            if (mood === 'hearty') {
+                // がっつり系：チャーシュー担々麺、セットメニューを優先
+                const heartyMenus = availableMenus.filter(menu => 
+                    menu.name.includes('チャーシュー') || 
+                    menu.name.includes('セット') || 
+                    menu.category === 'tantanmen'
+                );
+                selectedMenu = heartyMenus.length > 0 ? 
+                    heartyMenus[Math.floor(Math.random() * heartyMenus.length)] :
+                    availableMenus[Math.floor(Math.random() * availableMenus.length)];
+            } else if (mood === 'healthy') {
+                // あっさり系：サラダ、湯麺を優先
+                const healthyMenus = availableMenus.filter(menu => 
+                    menu.category === 'salad' || 
+                    menu.category === 'yunmen' ||
+                    menu.name.includes('トマト')
+                );
+                selectedMenu = healthyMenus.length > 0 ? 
+                    healthyMenus[Math.floor(Math.random() * healthyMenus.length)] :
+                    availableMenus[Math.floor(Math.random() * availableMenus.length)];
+            } else {
+                // 通常選択
+                selectedMenu = availableMenus[Math.floor(Math.random() * availableMenus.length)];
+            }
+            
+            // 辛さ調整
+            const adjustedMenu = {
+                ...selectedMenu,
+                adjustedSpiciness: spiciness,
+                originalSpiciness: selectedMenu.spicyLevel
+            };
+            
+            return {
+                menu: adjustedMenu,
+                comment: generateComment(adjustedMenu, selections),
+                allergyWarning: generateAllergyWarning(adjustedMenu, allergies)
+            };
+        }
+
+        function getBudgetRange(budget) {
+            switch(budget) {
+                case 'luxury': return {max: 1500, min: 1200};
+                case 'normal': return {max: 1200, min: 800};
+                case 'light': return {max: 800, min: 600};
+                default: return {max: 1000, min: 700};
+            }
+        }
+
+        function generateComment(menu, selections) {
+            const comments = [];
+            
+            // 名物メニューの場合
+            if (menu.isSignature) {
+                comments.push('らんてんの名物メニューです！ミシュランガイド掲載シェフの技をご堪能ください。');
+                return comments[0];
+            }
+            
+            // 予算別コメント
+            if (selections.budget === 'luxury') {
+                comments.push('今日は特別な日！らんてんの一番贅沢なメニューはいかが？');
+            } else if (selections.budget === 'normal') {
+                comments.push('らんてんの定番、担々麺の美味しさをしっかり味わえます');
+            } else {
+                comments.push('ヘルシーに決めるなら、新鮮サラダがおすすめ！');
+            }
+            
+            // 辛さ別コメント
+            if (selections.spiciness <= 2) {
+                comments.push('辛いのが苦手な方も安心、まろやかな担々麺です');
+            } else if (selections.spiciness === 3) {
+                comments.push('らんてんの基本の辛さ、胡麻の風味が際立ちます');
+            } else {
+                comments.push('辛党の方必見！本格四川の刺激をご堪能ください');
+            }
+            
+            // アレルギー対応コメント
+            if (selections.allergies.length > 0) {
+                comments.push('アレルギーに配慮した安心メニューをご提案しました');
+            } else {
+                comments.push('アレルギーの心配なく、お好きなメニューをどうぞ！');
+            }
+            
+            // 気分別コメント
+            if (selections.mood === 'hearty') {
+                comments.push('チャーシューたっぷり！満腹間違いなしの組み合わせ');
+            } else if (selections.mood === 'healthy') {
+                comments.push('野菜たっぷりでヘルシー、体に優しいメニューです');
+            }
+            
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
+        function generateLuxuryComment(noodle, salad, side, selections) {
+            const comments = [
+                '贅沢な3品セットで特別なお食事をお楽しみください！',
+                'らんてん自慢のコース料理スタイルでご提供いたします',
+                '麺・サラダ・サイドの絶妙なバランスが自慢のセットです',
+                '今日は特別！らんてんの美味しさを存分に味わえるセットメニュー'
+            ];
+            
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
+        function generateAllergyWarning(menu, userAllergies) {
+            if (userAllergies.length === 0) return null;
+            
+            const menuAllergens = menu.allergens || [];
+            const commonAllergens = menuAllergens.filter(allergen => 
+                !userAllergies.includes(allergen)
+            );
+            
+            if (menuAllergens.length > 0) {
+                return `このメニューに含まれるアレルゲン: ${menuAllergens.join('、')}`;
+            }
+            
+            return null;
+        }
+
+        function createFallbackSuggestion(budget, allergies) {
+            // アレルギー対応の安全なメニューを提案
+            const safeMenus = menuDatabase.salads.filter(menu => 
+                menu.allergens.length === 0 && menu.price <= budget.max
+            );
+            
+            if (safeMenus.length > 0) {
+                return {
+                    menu: safeMenus[0],
+                    comment: 'アレルギーに配慮した安全なメニューをお選びしました。',
+                    allergyWarning: null
+                };
+            }
+            
+            return {
+                menu: {
+                    name: 'スタッフにご相談ください',
+                    price: 0,
+                    description: 'お客様のアレルギー情報を考慮した特別メニューをご提案いたします。'
+                },
+                comment: 'お客様のご要望に合わせてスタッフが個別にご提案いたします。',
+                allergyWarning: null
+            };
+        }
+
+        function displaySuggestion(suggestion) {
+            const menuItems = document.getElementById('menu-items');
+            const commentText = document.getElementById('comment-text');
+            const allergyWarning = document.getElementById('allergy-warning');
+            const allergyWarningText = document.getElementById('allergy-warning-text');
+            
+            menuItems.innerHTML = '';
+            
+            const menu = suggestion.menu;
+            let totalPrice = menu.price;
+            
+            // メインメニューを表示
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            
+            let spicyIndicator = '';
+            if (menu.adjustedSpiciness && menu.adjustedSpiciness > 0) {
+                const spicyLevel = menuDatabase.spicyLevels[menu.adjustedSpiciness];
+                spicyIndicator = ` (辛さ${menu.adjustedSpiciness}: ${spicyLevel.name})`;
+            }
+            
+            let signatureBadge = '';
+            if (menu.isSignature) {
+                signatureBadge = '<span class="signature-badge">名物</span>';
+            }
+            
+            menuItem.innerHTML = `
+                <div class="menu-name">🍜 ${menu.name}${spicyIndicator}${signatureBadge}</div>
+                <div class="menu-price">${menu.price}円</div>
+            `;
+            menuItems.appendChild(menuItem);
+            
+            // エクストラメニュー（サラダ）がある場合
+            if (suggestion.extraMenu) {
+                const extraItem = document.createElement('div');
+                extraItem.className = 'menu-item';
+                extraItem.innerHTML = `
+                    <div class="menu-name">🥗 ${suggestion.extraMenu.name}</div>
+                    <div class="menu-price">${suggestion.extraMenu.price}円</div>
+                `;
+                menuItems.appendChild(extraItem);
+                totalPrice += suggestion.extraMenu.price;
+            }
+            
+            // 贅沢セットの複数エクストラメニューがある場合
+            if (suggestion.extraMenus) {
+                suggestion.extraMenus.forEach((extraMenu, index) => {
+                    const extraItem = document.createElement('div');
+                    extraItem.className = 'menu-item';
+                    const icon = index === 0 ? '🥗' : '🍽️';
+                    extraItem.innerHTML = `
+                        <div class="menu-name">${icon} ${extraMenu.name}</div>
+                        <div class="menu-price">${extraMenu.price}円</div>
+                    `;
+                    menuItems.appendChild(extraItem);
+                    totalPrice += extraMenu.price;
+                });
+            }
+            
+            // 合計金額を表示
+            const totalItem = document.createElement('div');
+            totalItem.className = 'menu-item';
+            const finalPrice = suggestion.totalPrice || totalPrice;
+            totalItem.innerHTML = `
+                <div class="menu-name">💰 合計金額</div>
+                <div class="menu-price">${finalPrice}円</div>
+            `;
+            menuItems.appendChild(totalItem);
+            
+            commentText.textContent = suggestion.comment;
+            
+            if (suggestion.allergyWarning) {
+                allergyWarningText.textContent = suggestion.allergyWarning;
+                allergyWarning.style.display = 'block';
+            } else {
+                allergyWarning.style.display = 'none';
+            }
+        }
+
+        function adjustSpiciness(adjustment) {
+            if (!currentSuggestion || !currentSuggestion.menu) return;
+            
+            const currentLevel = currentSuggestion.menu.adjustedSpiciness || currentSuggestion.menu.spicyLevel;
+            const newLevel = Math.max(1, Math.min(5, currentLevel + adjustment));
+            
+            if (newLevel !== currentLevel) {
+                currentSuggestion.menu.adjustedSpiciness = newLevel;
+                
+                // 辛さレベルに応じたコメント更新
+                const spicyLevel = menuDatabase.spicyLevels[newLevel];
+                if (adjustment > 0) {
+                    currentSuggestion.comment = `辛さを${newLevel}に調整しました。${spicyLevel.description}`;
+                } else if (adjustment < 0) {
+                    currentSuggestion.comment = `辛さを${newLevel}に調整しました。${spicyLevel.description}`;
+                } else {
+                    currentSuggestion.comment = `標準の辛さ（レベル${newLevel}）です。${spicyLevel.description}`;
+                }
+                
+                displaySuggestion(currentSuggestion);
+            }
+        }
+
+        function displayFinalDecision() {
+            if (!currentSuggestion) return;
+            
+            const finalMenuItems = document.getElementById('final-menu-items');
+            const finalCommentText = document.getElementById('final-comment-text');
+            
+            finalMenuItems.innerHTML = '';
+            
+            const menu = currentSuggestion.menu;
+            let totalPrice = menu.price;
+            
+            // メインメニューを表示
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            
+            let spicyIndicator = '';
+            if (menu.adjustedSpiciness && menu.adjustedSpiciness > 0) {
+                const spicyLevel = menuDatabase.spicyLevels[menu.adjustedSpiciness];
+                spicyIndicator = ` (辛さ${menu.adjustedSpiciness}: ${spicyLevel.name})`;
+            }
+            
+            let signatureBadge = '';
+            if (menu.isSignature) {
+                signatureBadge = '<span class="signature-badge">名物</span>';
+            }
+            
+            menuItem.innerHTML = `
+                <div class="menu-name">🍜 ${menu.name}${spicyIndicator}${signatureBadge}</div>
+                <div class="menu-price">${menu.price}円</div>
+            `;
+            finalMenuItems.appendChild(menuItem);
+            
+            // エクストラメニュー（サラダ）がある場合
+            if (currentSuggestion.extraMenu) {
+                const extraItem = document.createElement('div');
+                extraItem.className = 'menu-item';
+                extraItem.innerHTML = `
+                    <div class="menu-name">🥗 ${currentSuggestion.extraMenu.name}</div>
+                    <div class="menu-price">${currentSuggestion.extraMenu.price}円</div>
+                `;
+                finalMenuItems.appendChild(extraItem);
+                totalPrice += currentSuggestion.extraMenu.price;
+            }
+            
+            // 贅沢セットの複数エクストラメニューがある場合
+            if (currentSuggestion.extraMenus) {
+                currentSuggestion.extraMenus.forEach((extraMenu, index) => {
+                    const extraItem = document.createElement('div');
+                    extraItem.className = 'menu-item';
+                    const icon = index === 0 ? '🥗' : '🍽️';
+                    extraItem.innerHTML = `
+                        <div class="menu-name">${icon} ${extraMenu.name}</div>
+                        <div class="menu-price">${extraMenu.price}円</div>
+                    `;
+                    finalMenuItems.appendChild(extraItem);
+                    totalPrice += extraMenu.price;
+                });
+            }
+            
+            // 合計金額を表示
+            const totalItem = document.createElement('div');
+            totalItem.className = 'menu-item';
+            const finalPrice = currentSuggestion.totalPrice || totalPrice;
+            totalItem.innerHTML = `
+                <div class="menu-name">💰 合計金額</div>
+                <div class="menu-price">${finalPrice}円</div>
+            `;
+            finalMenuItems.appendChild(totalItem);
+            
+            finalCommentText.textContent = `らんてんでの素敵なお食事をお楽しみください！${currentSuggestion.comment}`;
+        }
+
+        function finalDecision() {
+            displayFinalDecision();
+            showFinalScreen();
+        }
+
+        function showResultScreen() {
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-screen').style.display = 'none';
+        }
+
+        function showFinalScreen() {
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'block';
+        }
+
+        function goBack() {
+            document.getElementById('selection-screen').style.display = 'block';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'none';
+        }
+
+        function restart() {
+            // 選択状態をリセット
+            selections = {budget: null, spiciness: null, allergies: [], mood: null};
+            
+            // ボタンの選択状態をリセット
+            document.querySelectorAll('.choice-btn, .spicy-btn, .allergy-btn, .optional-btn, .no-allergy-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // 提案ボタンを無効化
+            document.getElementById('submit-btn').disabled = true;
+            
+            // 最初の画面を表示
+            goBack();
+        }
+
+        // グローバル関数として公開
+        window.adjustSpiciness = adjustSpiciness;
+        window.finalDecision = finalDecision;
+        window.goBack = goBack;
+        window.restart = restart;
+    </script>
+</body>
+</html>
