@@ -3,45 +3,56 @@ const menuDatabase = {
   // 担々麺メニュー
   tantanmen: [
     {
-      id: 'tantanmen_basic',
-      name: '担々麺',
-      price: 800,
+      id: 'tantanmen_no_spice',
+      name: '担々麺 辛さなし',
+      price: 980,
+      category: 'tantanmen',
+      spicyLevel: 0,
+      allergens: ['小麦', '大豆', 'ごま', '豚肉'],
+      description: 'らんてんの基本の担々麺。胡麻の風味をお楽しみください'
+    },
+    {
+      id: 'tantanmen_mild',
+      name: '担々麺 辛さひかえめ',
+      price: 980,
+      category: 'tantanmen',
+      spicyLevel: 2,
+      allergens: ['小麦', '大豆', 'ごま', '豚肉'],
+      description: '辛さが得意じゃない方でも大丈夫な「小辛」程度'
+    },
+    {
+      id: 'tantanmen_normal',
+      name: '担々麺 辛さふつう',
+      price: 980,
       category: 'tantanmen',
       spicyLevel: 3,
       allergens: ['小麦', '大豆', 'ごま', '豚肉'],
-      description: 'らんてんの基本の担々麺。バランスの良い辛さと胡麻の風味'
+      description: 'らんてんの基本の担々麺。バランスの良い辛さと胡麻の風味。一般的な「中辛」'
     },
-    {
-      id: 'tantanmen_white_sesame',
-      name: '白ごま担々麺',
-      price: 1000,
+
+     {
+      id: 'tantanmen_karamasi1',
+      name: '担々麺 辛味増し＋1辛',
+      price: 1020,
       category: 'tantanmen',
-      spicyLevel: 2,
+      spicyLevel: 3,
       allergens: ['小麦', '大豆', 'ごま', '豚肉'],
-      description: '白ごまのまろやかさが特徴。辛さ控えめで初心者にもおすすめ'
+      description: '特製ブレンド辛み。'
     },
-    {
-      id: 'tantanmen_black_sesame',
-      name: '黒ごま担々麺',
-      price: 1000,
+   {
+      id: 'tantanmen_mala1',
+      name: '担々麺 麻辣増し＋1辛',
+      price: 1080,
       category: 'tantanmen',
       spicyLevel: 4,
       allergens: ['小麦', '大豆', 'ごま', '豚肉'],
-      description: '黒ごまの濃厚な風味と強めの辛さが魅力'
+      description: '自家製シビカラ　麻辣増し＋1辛'
     },
-    {
-      id: 'tantanmen_tomato',
-      name: 'トマト担々麺',
-      price: 1100,
-      category: 'tantanmen',
-      spicyLevel: 2,
-      allergens: ['小麦', '大豆', 'ごま', '豚肉'],
-      description: 'トマトの酸味がアクセント。さっぱりとした新感覚担々麺'
-    },
+  
     {
       id: 'tantanmen_mala_spicy',
-      name: 'シビれる辛口 麻辣担々麺',
-      price: 1080,
+      name: 'シビれる辛口 麻辣担々麺　麺大盛り',
+      price: 1230,
       category: 'tantanmen',
       spicyLevel: 5,
       allergens: ['小麦', '大豆', 'ごま', '豚肉'],
@@ -79,7 +90,7 @@ const menuDatabase = {
       name: 'らんてん坦々和え麺セット',
       price: 1360,
       category: 'tantanmen',
-      spicyLevel: 3,
+      spicyLevel: 2,
       allergens: ['小麦', '大豆', 'ごま', '豚肉', '卵'],
       description: 'ミシュランガイド掲載・中華20年のシェフが作る日替わりスープ・９種類の具材を堪能',
       isSignature: true,
@@ -88,12 +99,12 @@ const menuDatabase = {
   ],
 
   // 湯麺メニュー
-  yunmen: [
+  tanmen: [
     {
       id: 'sanratan',
       name: '酸辣湯麺',
       price: 1000,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 3,
       allergens: ['小麦', '大豆', '卵', '豚肉'],
       description: '酸っぱ辛いスープが特徴の中華麺'
@@ -102,7 +113,7 @@ const menuDatabase = {
       id: 'sanratan_large',
       name: '酸辣湯麺 麺大盛り',
       price: 1120,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 3,
       allergens: ['小麦', '大豆', '卵', '豚肉'],
       description: '酸辣湯麺の麺大盛りバージョン'
@@ -111,7 +122,7 @@ const menuDatabase = {
       id: 'sanratan_vinegar',
       name: '酸辣湯麺 黒酢添え',
       price: 1030,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 3,
       allergens: ['小麦', '大豆', '卵', '豚肉'],
       description: '黒酢でさらに酸味をプラス'
@@ -120,7 +131,7 @@ const menuDatabase = {
       id: 'sanratan_egg',
       name: '温たま酸辣湯麺',
       price: 1140,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 3,
       allergens: ['小麦', '大豆', '卵', '豚肉'],
       description: '温玉入りでまろやかな酸辣湯麺'
@@ -129,7 +140,7 @@ const menuDatabase = {
       id: 'shoyu_yunmen',
       name: '醤油湯麺',
       price: 990,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 1,
       allergens: ['小麦', '大豆', '豚肉'],
       description: 'あっさり醤油味の優しい湯麺'
@@ -138,7 +149,7 @@ const menuDatabase = {
       id: 'shoyu_yunmen_large',
       name: '醤油湯麺 麺大盛り',
       price: 1110,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 1,
       allergens: ['小麦', '大豆', '豚肉'],
       description: '醤油湯麺の麺大盛りバージョン'
@@ -147,7 +158,7 @@ const menuDatabase = {
       id: 'shoyu_yunmen_garlic',
       name: '醤油湯麺 生にんにく添え',
       price: 1030,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 2,
       allergens: ['小麦', '大豆', '豚肉'],
       description: '生にんにくでパンチを効かせた醤油湯麺'
@@ -156,7 +167,7 @@ const menuDatabase = {
       id: 'shoyu_yunmen_egg',
       name: '温たま醤油湯麺',
       price: 1130,
-      category: 'yunmen',
+      category: 'tanmen',
       spicyLevel: 1,
       allergens: ['小麦', '大豆', '豚肉', '卵'],
       description: '温玉入りでマイルドな醤油湯麺'
@@ -182,24 +193,6 @@ const menuDatabase = {
       spicyLevel: 0,
       allergens: ['乳製品', '卵'],
       description: 'クリーミーなシーザードレッシングのサラダ'
-    },
-    {
-      id: 'avocado_salad',
-      name: 'アボカドサラダ',
-      price: 750,
-      category: 'salad',
-      spicyLevel: 0,
-      allergens: [],
-      description: 'アボカドたっぷりのヘルシーサラダ'
-    },
-    {
-      id: 'chicken_salad',
-      name: 'チキンサラダ',
-      price: 800,
-      category: 'salad',
-      spicyLevel: 0,
-      allergens: ['鶏肉'],
-      description: 'ジューシーなチキン入りサラダ'
     },
     {
       id: 'tofu_salad',
@@ -265,12 +258,12 @@ const menuDatabase = {
   sides: [
     {
       id: 'meat_soboro_don',
-      name: '炙りチャーシュー丼',
-      price: 480,
+      name: '肉そぼろ丼',
+      price: 450,
       category: 'side',
       spicyLevel: 1,
       allergens: ['豚肉', '大豆'],
-      description: '甘辛い肉そぼろのミニ丼'
+      description: '甘辛い肉そぼろ丼'
     },
     {
       id: 'karaage_2',
@@ -289,6 +282,15 @@ const menuDatabase = {
       spicyLevel: 0,
       allergens: ['鶏肉', '小麦'],
       description: 'ジューシーなから揚げ4個'
+    },
+    {
+      id: 'gomadango_2',
+      name: 'ごま団子2個',
+      price: 350,
+      category: 'side',
+      spicyLevel: 0,
+      allergens: ['小麦'],
+      description: '中は黒ごまあん、外は白ごま'
     }
   ],
 
@@ -307,7 +309,7 @@ const menuDatabase = {
 
   // メニュー取得メソッド
   getAllMenus() {
-    return [...this.tantanmen, ...this.yunmen, ...this.salads, ...this.sides];
+    return [...this.tantanmen, ...this.tanmen, ...this.salads, ...this.sides];
   },
 
   // カテゴリ別メニュー取得

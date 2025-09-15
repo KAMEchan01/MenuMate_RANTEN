@@ -84,6 +84,57 @@
             flex-wrap: wrap;
         }
 
+        /* 来店タイプ用のグリッドレイアウト */
+        .button-group:first-of-type {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 10px;
+        }
+
+        /* ２回以上来店ボタンを下段に配置 */
+        .button-group:first-of-type .choice-btn:last-child {
+            grid-column: 1 / -1;
+        }
+
+        /* 辛さ選択用のレイアウト */
+        .spicy-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 8px;
+        }
+
+        .spicy-group .choice-btn {
+            font-size: 12px;
+            padding: 12px 8px;
+            min-width: 60px;
+        }
+
+        /* 辛口と大辛以上を下段に配置 */
+        .spicy-group .choice-btn:nth-child(4) {
+            grid-column: 2 / 3;
+            grid-row: 2;
+        }
+
+        .spicy-group .choice-btn:last-child {
+            grid-column: 3 / 4;
+            grid-row: 2;
+        }
+
+        /* 気分選択用のレイアウト */
+        .button-group.mood-group {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            flex-wrap: nowrap !important;
+        }
+
+        .button-group.mood-group .optional-btn {
+            width: 100% !important;
+            flex: none !important;
+        }
+
         .choice-btn {
             flex: 1;
             padding: 15px 10px;
@@ -410,20 +461,23 @@
 
         <div id="selection-screen" class="content">
             <div class="question">
-                <h3>💰 ご予算はいかがですか？ <span class="required">※必須</span></h3>
+                <h3>👥 ご来店タイプをお選びください <span class="required">※必須</span></h3>
                 <div class="button-group">
-                    <button class="choice-btn" data-budget="luxury">贅沢<br><small>1500円〜</small></button>
-                    <button class="choice-btn" data-budget="normal">普通<br><small>1000円程度</small></button>
-                    <button class="choice-btn" data-budget="light">控えめ<br><small>600円以下</small></button>
+                    <button class="choice-btn" data-visitor-type="first-male">初めての方<br><small>（男性）</small></button>
+                    <button class="choice-btn" data-visitor-type="first-female">初めての方<br><small>（女性）</small></button>
+                    <button class="choice-btn" data-visitor-type="with-kids">お子様連れ<br><small>の方</small></button>
+                    <button class="choice-btn" data-visitor-type="returning">２回以上来店<br><small></small></button>
                 </div>
             </div>
 
             <div class="question">
-                <h3>🌶️ 辛さの好みは？ <span class="required">※必須</span></h3>
-                <div class="button-group">
-                    <button class="choice-btn" data-spicy="1">マイルド<br><small>優しい辛さ</small></button>
-                    <button class="choice-btn" data-spicy="3">中辛<br><small>程よい辛さ</small></button>
-                    <button class="choice-btn" data-spicy="5">辛口<br><small>しっかり辛い</small></button>
+                <h3>🌶️ 辛さの好みをお選びください <span class="required">※必須</span></h3>
+                <div class="button-group spicy-group">
+                    <button class="choice-btn" data-spicy="0">辛さなし<br><small>1</small></button>
+                    <button class="choice-btn" data-spicy="2">ひかえめ<br><small>2</small></button>
+                    <button class="choice-btn" data-spicy="3">ふつう<br><small>3</small></button>
+                    <button class="choice-btn" data-spicy="4">辛口<br><small>4</small></button>
+                    <button class="choice-btn" data-spicy="5">大辛以上<br><small>5</small></button>
                 </div>
             </div>
 
@@ -444,7 +498,7 @@
 
             <div class="question">
                 <h3>✨ 今日の気分は？</h3>
-                <div class="button-group">
+                <div class="button-group mood-group">
                     <button class="optional-btn" data-mood="hearty">がっつり系<br><small>満腹重視</small></button>
                     <button class="optional-btn" data-mood="healthy">あっさり系<br><small>ヘルシー重視</small></button>
                 </div>
@@ -508,7 +562,7 @@
 
         // 選択状態
         let selections = {
-            budget: null,
+            visitorType: null,
             spiciness: null,
             allergies: [],
             mood: null
@@ -522,12 +576,12 @@
         });
 
         function setupEventListeners() {
-            // 予算選択ボタン
-            document.querySelectorAll('[data-budget]').forEach(btn => {
+            // 来店タイプ選択ボタン
+            document.querySelectorAll('[data-visitor-type]').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    document.querySelectorAll('[data-budget]').forEach(b => b.classList.remove('selected'));
+                    document.querySelectorAll('[data-visitor-type]').forEach(b => b.classList.remove('selected'));
                     this.classList.add('selected');
-                    selections.budget = this.dataset.budget;
+                    selections.visitorType = this.dataset.visitorType;
                     checkSubmitButton();
                 });
             });
@@ -598,7 +652,7 @@
             const submitBtn = document.getElementById('submit-btn');
             const allergySelected = selections.allergies.length > 0 || document.getElementById('no-allergy-btn').classList.contains('selected');
             
-            if (selections.budget && selections.spiciness !== null && allergySelected) {
+            if (selections.visitorType && selections.spiciness !== null && allergySelected) {
                 submitBtn.disabled = false;
             } else {
                 submitBtn.disabled = true;
@@ -613,7 +667,7 @@
         }
 
         function createSuggestion(selections) {
-            const budget = getBudgetRange(selections.budget);
+            const visitorType = selections.visitorType;
             const spiciness = selections.spiciness;
             const allergies = selections.allergies;
             const mood = selections.mood;
@@ -632,14 +686,22 @@
                 suitableMenus = availableMenus;
             }
             
-            // 予算内のメニューを選択
-            const affordableMenus = suitableMenus.filter(menu => menu.price <= budget.max);
-            
-            if (affordableMenus.length === 0) {
-                return createFallbackSuggestion(budget, allergies);
+            // 来店タイプ別の推薦処理
+            if (visitorType === 'first-male') {
+                // 初めての方（男性）: 定番メニューで満足感重視、担々麺を中心
+                return createFirstMaleSuggestion(spiciness, allergies, mood);
+            } else if (visitorType === 'first-female') {
+                // 初めての方（女性）: ヘルシーでバランス重視、サラダセットなど
+                return createFirstFemaleSuggestion(spiciness, allergies, mood);
+            } else if (visitorType === 'with-kids') {
+                // お子様連れの方: 辛さ控えめ、取り分けしやすいメニュー
+                return createWithKidsSuggestion(spiciness, allergies, mood);
+            } else if (visitorType === 'returning') {
+                // ２回以上来店: リピーター向け、名物メニューや冒険的な組み合わせ
+                return createReturningSuggestion(spiciness, allergies, mood);
             }
             
-            // 贅沢予算の場合の特別処理（3品セット）
+            // 従来の予算別処理（フォールバック）
             if (selections.budget === 'luxury') {
                 // 担々麺または湯麺から1品選択
                 const noodleMenus = [...menuDatabase.tantanmen, ...menuDatabase.yunmen].filter(menu => 
@@ -803,6 +865,59 @@
             }
         }
 
+        function generateVisitorTypeComment(visitorType, menu, selections) {
+            const comments = [];
+            
+            // 来店タイプ別コメント
+            if (visitorType === 'first-male') {
+                comments.push('らんてんの定番をしっかり味わえる満足メニューです');
+                comments.push('初回来店におすすめの人気メニューです');
+                comments.push('ボリューム満点で満足いただけると思います');
+            } else if (visitorType === 'first-female') {
+                comments.push('ヘルシーでバランスの良い、らんてんおすすめの組み合わせです');
+                comments.push('女性に人気のヘルシーセットです');
+                comments.push('美味しくて体に優しいメニューをご提案しました');
+            } else if (visitorType === 'with-kids') {
+                comments.push('お子様と一緒にお楽しみいただける、優しい味のメニューです');
+                comments.push('お子様でも安心してお召し上がりいただけます');
+                comments.push('取り分けしやすいメニューをご提案しました');
+            } else if (visitorType === 'returning') {
+                comments.push('リピーターの方におすすめ！いつもと違う組み合わせをお試しください');
+                comments.push('常連様向けの特別なメニューをご提案いたします');
+                comments.push('新しい味の発見をお楽しみください');
+                if (menu.isSignature) {
+                    comments.push('らんてん自慢の名物メニューです！');
+                }
+            }
+            
+            // 辛さ別コメント
+            if (selections.spiciness === 0) {
+                comments.push('辛味を使わない、お子様でも安心のメニューです');
+            } else if (selections.spiciness === 2) {
+                comments.push('辛いのが苦手な方も安心、まろやかな担々麺です');
+            } else if (selections.spiciness === 3) {
+                comments.push('らんてんの基本の辛さ、胡麻の風味が際立ちます');
+            } else if (selections.spiciness === 4) {
+                comments.push('しっかりとした辛さで、満足感のある一杯です');
+            } else if (selections.spiciness === 5) {
+                comments.push('辛党の方必見！本格四川の刺激をご堪能ください');
+            }
+            
+            // アレルギー対応コメント
+            if (selections.allergies.length > 0) {
+                comments.push('アレルギーに配慮した安心メニューをご提案しました');
+            }
+            
+            // 気分別コメント
+            if (selections.mood === 'hearty') {
+                comments.push('がっつり系でお腹いっぱいになります');
+            } else if (selections.mood === 'healthy') {
+                comments.push('あっさりヘルシーで午後もすっきり');
+            }
+            
+            return comments[Math.floor(Math.random() * comments.length)];
+        }
+
         function generateComment(menu, selections) {
             const comments = [];
             
@@ -900,6 +1015,245 @@
             }
             
             return null;
+        }
+
+        // 来店タイプ別推薦関数
+        function createFirstMaleSuggestion(spiciness, allergies, mood) {
+            // 初めての方（男性）: 担々麺を必ず提案
+            const tantanmenMenus = menuDatabase.tantanmen.filter(menu => 
+                !allergies.some(allergen => menu.allergens.includes(allergen))
+            );
+            
+            if (tantanmenMenus.length === 0) {
+                return createGenericSuggestion(spiciness, allergies, mood);
+            }
+            
+            // 辛さレベルに適した担々麺を選択
+            let suitableMenus = tantanmenMenus.filter(menu => 
+                Math.abs(menu.spicyLevel - spiciness) <= 1
+            );
+            if (suitableMenus.length === 0) suitableMenus = tantanmenMenus;
+            
+            const selectedMenu = suitableMenus[Math.floor(Math.random() * suitableMenus.length)];
+            
+            // がっつり系の場合は3品セットを提案
+            if (mood === 'hearty') {
+                return createHeartySet(selectedMenu, spiciness, allergies, 'first-male');
+            }
+            
+            return {
+                menu: { ...selectedMenu, adjustedSpiciness: spiciness, originalSpiciness: selectedMenu.spicyLevel },
+                comment: generateVisitorTypeComment('first-male', selectedMenu, { spiciness, allergies, mood }),
+                allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+            };
+        }
+
+        function createFirstFemaleSuggestion(spiciness, allergies, mood) {
+            // 初めての方（女性）: 担々麺を必ず提案
+            const tantanmenMenus = menuDatabase.tantanmen.filter(menu => 
+                !allergies.some(allergen => menu.allergens.includes(allergen))
+            );
+            
+            if (tantanmenMenus.length === 0) {
+                return createGenericSuggestion(spiciness, allergies, mood);
+            }
+            
+            // 辛さレベルに適した担々麺を選択
+            let suitableMenus = tantanmenMenus.filter(menu => 
+                Math.abs(menu.spicyLevel - spiciness) <= 1
+            );
+            if (suitableMenus.length === 0) suitableMenus = tantanmenMenus;
+            
+            const selectedMenu = suitableMenus[Math.floor(Math.random() * suitableMenus.length)];
+            
+            // がっつり系の場合は3品セットを提案
+            if (mood === 'hearty') {
+                return createHeartySet(selectedMenu, spiciness, allergies, 'first-female');
+            }
+            
+            // ヘルシー志向なので、サラダを追加
+            const saladMenus = menuDatabase.salads.filter(salad => 
+                !allergies.some(allergen => salad.allergens.includes(allergen))
+            );
+            
+            if (saladMenus.length > 0) {
+                const selectedSalad = saladMenus[Math.floor(Math.random() * saladMenus.length)];
+                return {
+                    menu: { ...selectedMenu, adjustedSpiciness: spiciness, originalSpiciness: selectedMenu.spicyLevel },
+                    extraMenus: [selectedSalad],
+                    totalPrice: selectedMenu.price + selectedSalad.price,
+                    comment: generateVisitorTypeComment('first-female', selectedMenu, { spiciness, allergies, mood }),
+                    allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+                };
+            }
+            
+            return {
+                menu: { ...selectedMenu, adjustedSpiciness: spiciness, originalSpiciness: selectedMenu.spicyLevel },
+                comment: generateVisitorTypeComment('first-female', selectedMenu, { spiciness, allergies, mood }),
+                allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+            };
+        }
+
+        function createWithKidsSuggestion(spiciness, allergies, mood) {
+            // お子様連れの方: 辛さなしメニューを必ず提案
+            // 辛さレベル0のメニューまたは湯麺を優先
+            const noSpiceMenus = [...menuDatabase.tanmen, ...menuDatabase.salads, ...menuDatabase.sides]
+                .filter(menu => 
+                    menu.spicyLevel === 0 &&
+                    !allergies.some(allergen => menu.allergens.includes(allergen))
+                );
+            
+            // 辛さレベル0のメニューがない場合は、辛さレベル1の湯麺を選択
+            if (noSpiceMenus.length === 0) {
+                const mildTanmenMenus = menuDatabase.tanmen.filter(menu => 
+                    menu.spicyLevel <= 1 &&
+                    !allergies.some(allergen => menu.allergens.includes(allergen))
+                );
+                
+                if (mildTanmenMenus.length > 0) {
+                    const selectedMenu = mildTanmenMenus[Math.floor(Math.random() * mildTanmenMenus.length)];
+                    
+                    // がっつり系の場合は3品セットを提案
+                    if (mood === 'hearty') {
+                        return createHeartySet(selectedMenu, 0, allergies, 'with-kids'); // 辛さを0に固定
+                    }
+                    
+                    return {
+                        menu: { ...selectedMenu, adjustedSpiciness: 0, originalSpiciness: selectedMenu.spicyLevel },
+                        comment: generateVisitorTypeComment('with-kids', selectedMenu, { spiciness: 0, allergies, mood }),
+                        allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+                    };
+                }
+                
+                return createGenericSuggestion(0, allergies, mood); // 辛さを0に固定
+            }
+            
+            const selectedMenu = noSpiceMenus[Math.floor(Math.random() * noSpiceMenus.length)];
+            
+            // がっつり系の場合は3品セットを提案
+            if (mood === 'hearty') {
+                return createHeartySet(selectedMenu, 0, allergies, 'with-kids'); // 辛さを0に固定
+            }
+            
+            return {
+                menu: { ...selectedMenu, adjustedSpiciness: 0, originalSpiciness: selectedMenu.spicyLevel },
+                comment: generateVisitorTypeComment('with-kids', selectedMenu, { spiciness: 0, allergies, mood }),
+                allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+            };
+        }
+
+        function createReturningSuggestion(spiciness, allergies, mood) {
+            // ２回以上来店: 担々麺以外のメニューを提案
+            
+            // 湯麺、サラダ、サイドメニューから選択（担々麺を除外）
+            const nonTantanmenMenus = [...menuDatabase.tanmen, ...menuDatabase.salads, ...menuDatabase.sides]
+                .filter(menu => 
+                    !allergies.some(allergen => menu.allergens.includes(allergen)) &&
+                    (spiciness === 0 ? menu.spicyLevel <= 1 : Math.abs(menu.spicyLevel - spiciness) <= 2)
+                );
+            
+            if (nonTantanmenMenus.length === 0) {
+                return createGenericSuggestion(spiciness, allergies, mood);
+            }
+            
+            // 湯麺を優先的に選択
+            let priorityMenus = nonTantanmenMenus.filter(menu => menu.category === 'tanmen');
+            if (priorityMenus.length === 0) priorityMenus = nonTantanmenMenus;
+            
+            const selectedMenu = priorityMenus[Math.floor(Math.random() * priorityMenus.length)];
+            
+            // がっつり系の場合は3品セットを提案
+            if (mood === 'hearty') {
+                return createHeartySet(selectedMenu, spiciness, allergies, 'returning');
+            }
+            
+            // 冒険的な組み合わせとして、サラダやサイドメニューを追加
+            const saladMenus = menuDatabase.salads.filter(salad => 
+                !allergies.some(allergen => salad.allergens.includes(allergen))
+            );
+            
+            const sideMenus = menuDatabase.sides.filter(side => 
+                !allergies.some(allergen => side.allergens.includes(allergen))
+            );
+            
+            // 50%の確率でサラダまたはサイドメニューを追加
+            if (Math.random() < 0.5 && (saladMenus.length > 0 || sideMenus.length > 0)) {
+                const extraMenu = Math.random() < 0.5 && saladMenus.length > 0 ? 
+                    saladMenus[Math.floor(Math.random() * saladMenus.length)] :
+                    sideMenus[Math.floor(Math.random() * sideMenus.length)];
+                
+                return {
+                    menu: { ...selectedMenu, adjustedSpiciness: spiciness, originalSpiciness: selectedMenu.spicyLevel },
+                    extraMenus: [extraMenu],
+                    totalPrice: selectedMenu.price + extraMenu.price,
+                    comment: generateVisitorTypeComment('returning', selectedMenu, { spiciness, allergies, mood }),
+                    allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+                };
+            }
+            
+            return {
+                menu: { ...selectedMenu, adjustedSpiciness: spiciness, originalSpiciness: selectedMenu.spicyLevel },
+                comment: generateVisitorTypeComment('returning', selectedMenu, { spiciness, allergies, mood }),
+                allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+            };
+        }
+
+        function createHeartySet(baseMenu, spiciness, allergies, visitorType) {
+            // がっつり系選択時の3品セット提案機能
+            const saladMenus = menuDatabase.salads.filter(salad => 
+                !allergies.some(allergen => salad.allergens.includes(allergen))
+            );
+            
+            const sideMenus = menuDatabase.sides.filter(side => 
+                !allergies.some(allergen => side.allergens.includes(allergen))
+            );
+            
+            const extraMenus = [];
+            let totalPrice = baseMenu.price;
+            
+            // サラダを追加
+            if (saladMenus.length > 0) {
+                const selectedSalad = saladMenus[Math.floor(Math.random() * saladMenus.length)];
+                extraMenus.push(selectedSalad);
+                totalPrice += selectedSalad.price;
+            }
+            
+            // サイドメニューを追加
+            if (sideMenus.length > 0) {
+                const selectedSide = sideMenus[Math.floor(Math.random() * sideMenus.length)];
+                extraMenus.push(selectedSide);
+                totalPrice += selectedSide.price;
+            }
+            
+            return {
+                menu: { ...baseMenu, adjustedSpiciness: spiciness, originalSpiciness: baseMenu.spicyLevel },
+                extraMenus: extraMenus,
+                totalPrice: totalPrice,
+                comment: generateVisitorTypeComment(visitorType, baseMenu, { spiciness, allergies, mood: 'hearty' }),
+                allergyWarning: generateAllergyWarning(baseMenu, allergies)
+            };
+        }
+
+        function createGenericSuggestion(spiciness, allergies, mood) {
+            // 汎用的な推薦（フォールバック）
+            const allMenus = menuDatabase.getAllMenus().filter(menu => 
+                !allergies.some(allergen => menu.allergens.includes(allergen))
+            );
+            
+            if (allMenus.length === 0) {
+                return {
+                    menu: null,
+                    comment: 'アレルギー対応メニューが見つかりませんでした。店舗スタッフにご相談ください。',
+                    allergyWarning: null
+                };
+            }
+            
+            const selectedMenu = allMenus[Math.floor(Math.random() * allMenus.length)];
+            return {
+                menu: { ...selectedMenu, adjustedSpiciness: spiciness, originalSpiciness: selectedMenu.spicyLevel },
+                comment: generateComment(selectedMenu, { spiciness, allergies, mood }),
+                allergyWarning: generateAllergyWarning(selectedMenu, allergies)
+            };
         }
 
         function createFallbackSuggestion(budget, allergies) {
